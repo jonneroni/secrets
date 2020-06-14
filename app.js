@@ -31,7 +31,7 @@ app.use(passport.session());
 
 
 // Connect to the mongoDB database
-mongoose.connect("mongodb:mongodb://localhost:27017/secretsDB", {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect("mongodb+srv://secrets-jonne:" + process.env.MONGO_PASS + "@cluster0-0mbkk.mongodb.net/secretsDB?retryWrites=true&w=majority", {useNewUrlParser: true, useUnifiedTopology: true});
 
 mongoose.set('useCreateIndex', true);
 
@@ -63,7 +63,7 @@ passport.serializeUser(function(user, done) {
 passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: "http://localhost:3000/auth/google/secrets",
+    callbackURL: "https://kaajis-secrets.herokuapp.com/auth/google/secrets",
     userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
   },
   function(accessToken, refreshToken, profile, cb) {
@@ -76,7 +76,7 @@ passport.use(new GoogleStrategy({
 passport.use(new FacebookStrategy({
     clientID: process.env.FACEBOOK_APP_ID,
     clientSecret: process.env.FACEBOOK_APP_SECRET,
-    callbackURL: "http://localhost:3000/auth/facebook/secrets"
+    callbackURL: "https://kaajis-secrets.herokuapp.com/auth/facebook/secrets"
   },
   function(accessToken, refreshToken, profile, cb) {
     User.findOrCreate({ facebookId: profile.id }, function (err, user) {
@@ -187,6 +187,11 @@ app.post("/login", (req, res) => {
     })
 });
 
-app.listen(3000, function() {
-  console.log("Server started on port 3000");
+
+let port = process.env.PORT;
+if (port == null || port == "") {
+  port = 3000;
+}
+app.listen(port, () => {
+  console.log("Server started succesfully.");
 });
